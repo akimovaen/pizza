@@ -1,0 +1,30 @@
+{% extends "orders/base.html" %}
+
+{% block body %}
+
+<h1>Menu</h1>
+{% for dishes in menu %}
+    <p>{{ dishes.name }}</p>    
+    <hr>
+    <ul>
+        {% for dish in dishes.dishes %}
+            <li>{{ dish.name }} -
+                {% if dish.S %}
+                    small {{ dish.S }} -
+                {% endif %}
+                {% if dish.L %}
+                    large {{ dish.L }} -
+                {% endif %}
+                {% if dish.A %}
+                    addition {{ dish.A }} -
+                {% endif %}
+                {% if dish.price %}
+                    {{ dish.price }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+{% endfor %}
+
+{% endblock %}

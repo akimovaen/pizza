@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # Create your models here.
@@ -23,3 +24,15 @@ class Items(models.Model):
 
     def __str__(self):
         return f"{self.menu} - {self.name} ({self.trait})"
+
+    def is_valid_trait(self):
+        t = self.trait
+        return (t == 'S') or (t == 'L') or (t == 'A') or (t == None)
+
+    def save(self, *args, **kwargs):
+        valid_trait = self.is_valid_trait()
+        if valid_trait ==False:
+            message = "Trait must be 'Small', 'Large', 'Addition' or None"
+            raise ValidationError(message)
+
+        super().save(*args, **kwargs)
