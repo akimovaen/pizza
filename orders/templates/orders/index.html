@@ -1,30 +1,105 @@
 {% extends "orders/base.html" %}
 
-{% block body %}
+{% load static %}
 
+
+{% block title %}
+    Menu
+{% endblock %}
+
+{% block body %}
 <h1>Menu</h1>
 {% for dishes in menu %}
-    <p>{{ dishes.name }}</p>    
-    <hr>
-    <ul>
+    <div class='menu'>
+        <div class="dishes {{dishes.image}}">{{ dishes.name }}</div>
+        <div class='table'>
         {% for dish in dishes.dishes %}
-            <li>{{ dish.name }} -
+            <div class="row">
+                <div class="col-sm-5">{{ dish.name }}</div>  
                 {% if dish.S %}
-                    small {{ dish.S }} -
-                {% endif %}
-                {% if dish.L %}
-                    large {{ dish.L }} -
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <div class="col-sm-2 size">Small</div>
+                    <div class="col-sm-2 small price">{{ dish.S }}</div>
+                    <div class="col-sm-2 large price">{{ dish.L }}</div>  
+                {% elif dish.L %}
+                    <label class="switch lar" style="visibility:hidden">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <div class="col-sm-2 size">Large</div>
+                    <div class="col-sm-2 price">{{ dish.L }}</div>  
                 {% endif %}
                 {% if dish.A %}
-                    addition {{ dish.A }} -
+                    <label class="switch" style="visibility:hidden">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <div class="col-sm-2 size"></div>
+                    <div class="col-sm-2 add price">{{ dish.A }}</div>  
                 {% endif %}
                 {% if dish.price %}
-                    {{ dish.price }}
+                    <div class="col-sm-5 no-size price">{{ dish.price }}</div>  
                 {% endif %}
+                <div class="col-sm-1 into-shop-cart" data-toggle="tooltip"
+                data-placement="right" title="Add the dish to shopping cart">
+                    +
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+<div class="cart">
+    <h5><span class="user">{{ user }}</span>`s shopping cart</h5>
+    <ol id="select-dish">{% if user_shop_cart %}
+        {% for dish in user_shop_cart %}
+            <li class="element">
+                <div class="el-id" hidden>{{ dish.id }}</div>
+                <div class="el-menu">{{ dish.menu }}:</div>
+                <div class="el-name">{{ dish.name }}</div>
+                <div class="el-size">{{ dish.size }}</div>
+                <div class="el-price">{{ dish.price }}</div>
+                <span class="el-close">x</span>
+                <ul>
+                {% if dish.add1 %}
+                    <li>{{ dish.add1.name }}<span class="el-price">{{ dish.add1.price }}</span></li>
+                {% endif %}
+                {% if dish.add2 %}
+                    <li>{{ dish.add2.name }}<span class="el-price">{{ dish.add2.price }}</span></li>
+                {% endif %}
+                {% if dish.add3 %}
+                    <li>{{ dish.add3.name }}<span class="el-price">{{ dish.add3.price }}</span></li>
+                {% endif %}
+                </ul>
+            
             </li>
         {% endfor %}
-    </ul>
-    <hr>
-{% endfor %}
+    {% endif %}</ol>
+    <div>Total sum: <span id="sum-shop-cart"></span></div>
+    <button id="place-order">Click here to place your order</button>
+</div>
+
+
+<div id="selectExtras" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Do you want some extras to your sub?</h2>
+        </div>
+        <div class="modal-body">
+            <div id="content"></div>  
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="cancelbtn">Cancel</button>
+            <button type="button" class="readybtn">Ready</button>
+          </div>
+    </div>
+</div>
+
+<div id="test"></div>
 
 {% endblock %}
