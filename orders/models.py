@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+from django.utils.formats import localize
 
 # Create your models here.
 
@@ -16,7 +18,7 @@ class Items(models.Model):
     TRAITS = (
         ('S', 'Small'),
         ('L', 'Large'),
-        ('A', 'Addition')
+        ('A', 'Addition'),
     )
     
     name = models.CharField(max_length=30)
@@ -25,7 +27,7 @@ class Items(models.Model):
     price = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.menu} - {self.name} ({self.trait})"
+        return f"{self.menu} - {self.name} ({self.get_trait_display()})"
 
     def is_valid_trait(self):
         t = self.trait
@@ -45,6 +47,8 @@ class ShopCart(models.Model):
     add1 = models.ForeignKey(Items, on_delete=models.CASCADE, null=True, blank=True, related_name="add1")
     add2 = models.ForeignKey(Items, on_delete=models.CASCADE, null=True, blank=True, related_name="add2")
     add3 = models.ForeignKey(Items, on_delete=models.CASCADE, null=True, blank=True, related_name="add3")
+    ordered = models.BooleanField(default=False)
+    order_number = models.IntegerField(null=True, blank=True)
 
     def cart_view(self):
         if not self.dish.trait:
@@ -53,7 +57,7 @@ class ShopCart(models.Model):
             "id": self.id,
             "menu": self.dish.menu.name,
             "name": self.dish.name,
-            "size": self.dish.trait,
+            "size": self.dish.get_trait_display(),
             "price": self.dish.price
         }
         
@@ -73,3 +77,19 @@ class ShopCart(models.Model):
             else:
                 view["add3"] = {"name": self.add3.name, "price": ""}
         return view
+
+
+class Order(models.Model):
+    STATUS = (
+        ('P', 'Pending'),
+        ('C', 'Complete'),
+    )
+
+    person = models.ForeignKey(User, on_delete=models.CASCADE, related_name="person")
+    number = models.IntegerField()
+    placing_time = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=1, choices=STATUS, default="P")
+    complete_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Order N{self.number} placing {self.placing_time} ({self.get_status_display()})"

@@ -11,12 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
     document.querySelector('#place-order').onclick = function() {
         const request = new XMLHttpRequest();
-        request.open('POST', '/place_order', true);
+        request.open('POST', '/place_order');
 
         request.onload = () => {
-            const result = JSON.parse(request.responseText);
+            window.location.href = 'orders'
         };
 
         const data = new FormData();
@@ -28,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         data.append('id', JSON.stringify(data_id));
         
         request.send(data);
-        return false;
     };
     
     var list_additions = [];
@@ -128,7 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         num_top = -1;
                         return false;
                     }
-            
+                    if (event.target == document.querySelector('.close')) {
+                        modal.style.display = "none";
+                        data_additions = {'data': []};
+                        shopping_cart(menu, name, size, user);
+                        num_top = -1;
+                        return false;
+                    }            
                     if (event.target == document.querySelector('.cancelbtn')) {
                         modal.style.display = "none";
                         data_additions = {'data': []};
@@ -203,14 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const cart_template = Handlebars.compile(document.querySelector('#cart_template').innerHTML);    
 
     function add_dish(data) {
-        let size = '';
-        if (data.size === 'S') {size = 'Small';}
-        else if (data.size === 'L') {size = 'Large';}
         const dish = cart_template({
             'id': data.id,
             'menu': data.menu,
             'name': data.name,
-            'size': size,
+            'size': data.size,
             'price': data.price,
         });
 
@@ -220,28 +223,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.add1) {
             li = document.createElement('li');
             li.innerHTML = data.add1.name;
-            span = document.createElement('span');
-            span.classList.add('el-price');
-            span.innerHTML = data.add1.price;
-            li.append(span);
+            if (data.add1.price) {
+                span = document.createElement('span');
+                span.classList.add('el-price');
+                span.innerHTML = data.add1.price;    
+                li.append(span);
+            }
             extra.append(li);
         }
         if (data.add2) {
             li = document.createElement('li');
             li.innerHTML = data.add2.name;
-            span = document.createElement('span');
-            span.classList.add('el-price');
-            span.innerHTML = data.add2.price;
-            li.append(span);
+            if (data.add2.price) {
+                span = document.createElement('span');
+                span.classList.add('el-price');
+                span.innerHTML = data.add2.price;
+                li.append(span);    
+            }
             extra.append(li);
         }
         if (data.add3) {
             li = document.createElement('li');
             li.innerHTML = data.add3.name;
-            span = document.createElement('span');
-            span.classList.add('el-price');
-            span.innerHTML = data.add3.price;
-            li.append(span);
+            if (data.add3.price) {
+                span = document.createElement('span');
+                span.classList.add('el-price');
+                span.innerHTML = data.add3.price;
+                li.append(span);    
+            }
             extra.append(li);
         }
         
@@ -264,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         request.onload = () => {
             const result = JSON.parse(request.responseText);
             if (result.success == 'true') {
-                dish.style.display = 'none';
+                dish.remove();
             }
             sum_shop_cart();
         };

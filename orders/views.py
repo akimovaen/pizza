@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 
 
 from .models import *
@@ -52,14 +53,14 @@ def index(request):
         "user": request.user,
         "menu": display_menu()
     }
-    user_shop_cart = ShopCart.objects.filter(user__username=request.user).all()
+    
+    user_shop_cart = ShopCart.objects.filter(user__username=request.user, ordered=False).all()
     if user_shop_cart:
         shop_cart = []
         for dish in user_shop_cart:
             dish_cart = ShopCart.objects.get(id=dish.id)
             shop_cart.append(dish_cart.cart_view())
         context["user_shop_cart"] = shop_cart
-        print(shop_cart)
 
     return render(request, "orders/index.html", context)
 
@@ -133,20 +134,54 @@ def delete_dish(request):
     return JsonResponse({"success": "true"})
 
 
-# @csrf_exempt
-# def place_order(request):
-#     data_id = json.loads(request.POST.get("id"))
-#     print(data_id)
-#     for i in data_id['id']:
-#         try:
-#             dish = ShopCart.objects.get(pk=i)
-#         except ObjectDoesNotExist:
-#             return JsonResponse({"success": "false"})
+def orders_view(user):
+    data = []
+    orders = Order.objects.filter(person=user).order_by('-number')
+    for order in orders:
+        dish_list = []
+        dishes = ShopCart.objects.filter(order_number=order.number)
+        for dish in dishes:
+            dish_list.append(dish.cart_view())
+        data.append({"order": order, "dishes": dish_list})
+
+    return data
+
+
+@csrf_exempt
+def place_order(request):
+    data_id = json.loads(request.POST.get("id"))
+    user = request.user
+    last_order = Order.objects.all().aggregate(Max('number'))
+    if last_order['number__max'] is None:
+        last_order['number__max'] = 0
+    order = Order(
+                person = user,
+                number = last_order['number__max'] + 1
+            )
+    order.save()
+
+    for i in data_id['id']:
+        try:
+            dish = ShopCart.objects.get(pk=i)
+        except ObjectDoesNotExist:
+            return JsonResponse({"success": "false"})
     
-        
-#         dish.delete()
-    
-#     return JsonResponse({"success": "true"})
+        dish.ordered = True
+        dish.order_number = order.number
+        dish.save()
+
+    return JsonResponse({"success": "true"})
+
+
+def orders(request):
+    user = request.user
+    context = {
+        "user": user,
+        "orders": orders_view(user)
+    }
+
+    return render(request, "orders/orders.html", context)
+
 
 
 def login_view(request):

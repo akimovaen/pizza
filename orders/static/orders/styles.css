@@ -1,3 +1,31 @@
+.topnav {
+  background: url("topnav.jpg") content-box;
+  overflow: hidden;
+  color: #ddd;
+  text-align: center;
+  font-size: 30px;
+}
+
+.topnav a {
+  color: #ddd;
+  text-align: center;
+  padding: 10px 40px;
+  text-decoration: none;
+  font-size: 24px;
+}
+
+.topnav a:hover {
+    color: black;
+}
+
+.topnav a.to-menu {
+  float: left;
+}
+
+.topnav a.userdata {
+  float: right;
+}
+
 .container-fluid {
   padding: 15px;
   margin: 15px;
@@ -15,6 +43,7 @@
 
 h1, h2, h3, h4, h5 {
   text-align: center;
+  width: 74%;
 }
 
 .menu {
@@ -143,10 +172,10 @@ input:checked + .slider:before {
 
 .cart {
   position: fixed;
-  top: 15px;
+  top: 55px;
   right: 0;
   width: 25%;
-  border: 1px solid blue;
+  border: 2px solid blue;
   padding: 5px;
 }
 
@@ -280,4 +309,27 @@ input:checked + .slider:before {
 
 #place-order {
   display: none;
+}
+
+#orders {
+  border: 2px solid forestgreen;
+  padding: 50px;
+  margin: 50px;
+  font-size: large;
+}
+
+#orders li {
+  margin: 5px 0;
+  padding: 5px;
+  margin-left: 25px;
+}
+
+.order-content {
+  display: none;
+}
+
+.show-content {
+  cursor: pointer;
+  color: forestgreen;
+  float: right;
 }

@@ -1,0 +1,27 @@
+{% extends "orders/base.html" %}
+
+{% load static %}
+
+{% block static %}
+<script src="{% static 'orders/orders.js' %}"></script>
+{% endblock %}        
+
+{% block title %}
+    Orders
+{% endblock %}
+
+{% block body %}
+
+<ul id="orders">
+    {% for order in orders %}    
+        <li>{{ order.order }}<span class="show-content"> &#x21F2</span>
+            <ol class="order-content">
+                {% for dish in order.dishes %}
+                <li>{{ dish.menu }}: {{ dish.name }} ({{ dish.size }}) - ${{ dish.price }}</li>
+                {% endfor %}
+            </ol>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

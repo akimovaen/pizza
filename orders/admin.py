@@ -8,3 +8,4 @@ from .models import *
 admin.site.register(Menu)
 admin.site.register(Items)
 admin.site.register(ShopCart)
+admin.site.register(Order)

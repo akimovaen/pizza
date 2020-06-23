@@ -2,6 +2,22 @@
 
 {% load static %}
 
+{% block static %}
+<script src="{% static 'orders/index.js' %}"></script>
+<script id="cart_template" type="text/x-handlebars-template">
+    <li class="element">
+        {% verbatim %}
+            <div class="el-id" hidden>{{ id }}</div>
+            <div class="el-menu">{{ menu }}:</div>
+            <div class="el-name">{{ name }}</div>
+            <div class="el-size">{{ size }}</div>
+            <div class="el-price">{{ price }}</div>
+            <span class="el-close">x</span>
+            <ul class="extra"></ul>
+        {% endverbatim %}
+    </li>
+</script>
+{% endblock %}        
 
 {% block title %}
     Menu
@@ -66,13 +82,19 @@
                 <span class="el-close">x</span>
                 <ul>
                 {% if dish.add1 %}
-                    <li>{{ dish.add1.name }}<span class="el-price">{{ dish.add1.price }}</span></li>
+                    <li>{{ dish.add1.name }}
+                        {% if dish.add1.price %}<span class="el-price">{{ dish.add1.price }}</span>
+                        {% endif %}</li>
                 {% endif %}
                 {% if dish.add2 %}
-                    <li>{{ dish.add2.name }}<span class="el-price">{{ dish.add2.price }}</span></li>
+                    <li>{{ dish.add2.name }}
+                        {% if dish.add2.price %}<span class="el-price">{{ dish.add2.price }}</span>
+                        {% endif %}</li>
                 {% endif %}
                 {% if dish.add3 %}
-                    <li>{{ dish.add3.name }}<span class="el-price">{{ dish.add3.price }}</span></li>
+                    <li>{{ dish.add3.name }}
+                        {% if dish.add3.price %}<span class="el-price">{{ dish.add3.price }}</span>
+                        {% endif %}</li>
                 {% endif %}
                 </ul>
             
@@ -83,12 +105,11 @@
     <button id="place-order">Click here to place your order</button>
 </div>
 
-
 <div id="selectExtras" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <span class="close">&times;</span>
             <h2>Do you want some extras to your sub?</h2>
+            <span class="close">&times;</span>
         </div>
         <div class="modal-body">
             <div id="content"></div>  
@@ -99,7 +120,4 @@
           </div>
     </div>
 </div>
-
-<div id="test"></div>
-
 {% endblock %}
