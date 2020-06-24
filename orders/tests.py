@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
+from django.utils import timezone
+from django.utils.formats import localize
 
 from .models import *
 from .views import *
@@ -12,6 +14,14 @@ class ModelsTestCase(TestCase):
     def setUp(self):
         m1 = Menu.objects.create(name='Menu_1')
         i1 = Items.objects.create(name='Items_1', menu=m1, trait="S", price=1.00)
+        user = User.objects.create_user('test', 'test@test.com', 'test')
+        order = Order.objects.create(person=user, number=1)
+
+    def tearDown(self):
+        m1 = Menu.objects.get(name="Menu_1")
+        m1.delete()
+        user = User.objects.get(username='test')
+        user.delete()
     
     def test_valid_trait(self):
         test = Items.objects.get(trait = 'S')
@@ -22,6 +32,14 @@ class ModelsTestCase(TestCase):
         with self.assertRaises(ValidationError):
             i2 = Items.objects.create(name='Items_2', menu=m, trait="T", price=1.00)
 
+    def test_order_default_status(self):
+        order = Order.objects.get(number=1)
+        self.assertEqual(order.status, "P")
+
+    def test_order_default_placing_time(self):
+        order = Order.objects.get(number=1)
+        self.assertEqual(localize(order.placing_time), localize(timezone.now()))
+        
 
 class RegisterTestCase(TestCase):
 

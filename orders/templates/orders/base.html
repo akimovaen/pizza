@@ -18,6 +18,9 @@
             <a href="{% url 'index' %}" class="to-menu">Back to Menu</a>
         {% endif %}
         {% if user.is_authenticated %}
+            {% if menu %}
+            <a href="{% url 'orders' %}" class="to-menu">Your orders</a>
+            {% endif %}      
             <a href="{% url 'logout' %}" class="userdata">Logout</a>
         {% else %}
             <a href="{% url 'login' %}" class="userdata">Login</a>

@@ -139,7 +139,7 @@ def orders_view(user):
     orders = Order.objects.filter(person=user).order_by('-number')
     for order in orders:
         dish_list = []
-        dishes = ShopCart.objects.filter(order_number=order.number)
+        dishes = ShopCart.objects.filter(order_number=order)
         for dish in dishes:
             dish_list.append(dish.cart_view())
         data.append({"order": order, "dishes": dish_list})
@@ -167,7 +167,7 @@ def place_order(request):
             return JsonResponse({"success": "false"})
     
         dish.ordered = True
-        dish.order_number = order.number
+        dish.order_number = order
         dish.save()
 
     return JsonResponse({"success": "true"})

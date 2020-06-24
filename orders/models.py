@@ -41,6 +41,26 @@ class Items(models.Model):
 
         super().save(*args, **kwargs)
 
+
+class Order(models.Model):
+    STATUS = (
+        ('P', 'Pending'),
+        ('C', 'Complete'),
+    )
+
+    person = models.ForeignKey(User, on_delete=models.CASCADE, related_name="person")
+    number = models.IntegerField()
+    placing_time = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=1, choices=STATUS, default="P")
+    complete_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        if self.status == "P":
+            return f"Order N{self.number} placing {localize(self.placing_time)} ({self.get_status_display()})"
+        else:
+            return f"Order N{self.number} placing {localize(self.placing_time)} ({self.get_status_display()}  {localize(self.complete_time)})"
+
+
 class ShopCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
     dish = models.ForeignKey(Items, on_delete=models.CASCADE, related_name="dish")
@@ -48,7 +68,7 @@ class ShopCart(models.Model):
     add2 = models.ForeignKey(Items, on_delete=models.CASCADE, null=True, blank=True, related_name="add2")
     add3 = models.ForeignKey(Items, on_delete=models.CASCADE, null=True, blank=True, related_name="add3")
     ordered = models.BooleanField(default=False)
-    order_number = models.IntegerField(null=True, blank=True)
+    order_number = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True, related_name="order_number")
 
     def cart_view(self):
         if not self.dish.trait:
@@ -78,18 +98,8 @@ class ShopCart(models.Model):
                 view["add3"] = {"name": self.add3.name, "price": ""}
         return view
 
-
-class Order(models.Model):
-    STATUS = (
-        ('P', 'Pending'),
-        ('C', 'Complete'),
-    )
-
-    person = models.ForeignKey(User, on_delete=models.CASCADE, related_name="person")
-    number = models.IntegerField()
-    placing_time = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=1, choices=STATUS, default="P")
-    complete_time = models.DateTimeField(null=True, blank=True)
-
     def __str__(self):
-        return f"Order N{self.number} placing {self.placing_time} ({self.get_status_display()})"
+        if self.ordered:
+            return f"Order N{self.order_number.number}"
+        else:
+            return "Not ordered"

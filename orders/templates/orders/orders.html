@@ -17,7 +17,26 @@
         <li>{{ order.order }}<span class="show-content"> &#x21F2</span>
             <ol class="order-content">
                 {% for dish in order.dishes %}
-                <li>{{ dish.menu }}: {{ dish.name }} ({{ dish.size }}) - ${{ dish.price }}</li>
+                <li>
+                    {{ dish.menu }}: {{ dish.name }} ({{ dish.size }}) - ${{ dish.price }}
+                    <ul>
+                        {% if dish.add1 %}
+                            <li>{{ dish.add1.name }}
+                                {% if dish.add1.price %} - ${{ dish.add1.price }}
+                                {% endif %}</li>
+                        {% endif %}
+                        {% if dish.add2 %}
+                            <li>{{ dish.add2.name }}
+                                {% if dish.add2.price %} - ${{ dish.add2.price }}
+                                {% endif %}</li>
+                        {% endif %}
+                        {% if dish.add3 %}
+                            <li>{{ dish.add3.name }}
+                                {% if dish.add3.price %} - ${{ dish.add3.price }}
+                                {% endif %}</li>
+                        {% endif %}
+                    </ul>
+                </li>
                 {% endfor %}
             </ol>
         </li>
