@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -173,6 +174,7 @@ def place_order(request):
     return JsonResponse({"success": "true"})
 
 
+@login_required
 def orders(request):
     user = request.user
     context = {
